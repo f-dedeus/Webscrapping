@@ -1,12 +1,12 @@
 import json
 from pathlib import Path
-from email.utils import parsedate_to_datetime
-
+#from email.utils import parsedate_to_datetime
+import datetime
 import feedparser
 
 # ---------- Configuração ----------
 FEEDS = {
-    "G1": "https://g1.globo.com/d/rss/g1/",
+    "G1": "https://g1.globo.com/rss/g1//",
     "BBC News Brasil": "https://feeds.bbci.co.uk/portuguese/rss.xml",
 }
 

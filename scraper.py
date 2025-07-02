@@ -13,4 +13,4 @@ if response.status_code == 200:
     titulo = soup.title.string
     print("Título da página:", titulo)
 else:
-    print("Erro ao acessar a página:", response.status_code)
+    print("puErro ao acessar a página:", response.status_code)

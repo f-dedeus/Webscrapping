@@ -1,66 +1,41 @@
-import json
+import logging
 from pathlib import Path
-#from email.utils import parsedate_to_datetime
-import datetime
-import feedparser
+import json
 
-# ---------- Configuração ----------
-FEEDS = {
-    "G1": "https://g1.globo.com/rss/g1//",
-    "BBC News Brasil": "https://feeds.bbci.co.uk/portuguese/rss.xml",
-}
+from utils import carregar_feeds, extrair_noticias
 
-OUTPUT_FILE = Path("noticias.json")
-MAX_ITENS  = None        # defina um inteiro p/ limitar por feed, ou deixe None
+# ---------- Configurações ----------
+LOG_FILE = "rss_reader.log"
+OUTPUT_FILE = Path("raw_noticias.json")
+FEEDS_FILE = Path("feeds.json")
+MAX_ITENS = None  # ou defina um número para limitar por feed
 
-# ---------- Funções utilitárias ----------
-def normaliza_data(pub_date: str) -> str:
-    """
-    Converte 'Tue, 02 Jul 2025 14:30:00 GMT' ➜ '2025-07-02T14:30:00+00:00'.
-    Se falhar, devolve a string original.
-    """
+# ---------- Logger ----------
+logging.basicConfig(
+    level=logging.INFO,
+    filename=LOG_FILE,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    encoding="utf-8",
+)
+
+# ---------- Execução ----------
+def main():
+    todas_noticias = []
+    feeds = carregar_feeds(FEEDS_FILE)
+
+    for fonte, url in feeds.items():
+        logging.info(f"Coletando notícias de: {fonte}")
+        noticias = extrair_noticias(fonte, url, MAX_ITENS)
+        logging.info(f"Encontradas {len(noticias)} notícias de {fonte}")
+        todas_noticias.extend(noticias)
+
     try:
-        return parsedate_to_datetime(pub_date).isoformat()
-    except Exception:
-        return pub_date or ""
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            json.dump(todas_noticias, f, ensure_ascii=False, indent=2)
+        print(f"✅ {len(todas_noticias)} notícias salvas em {OUTPUT_FILE}")
+        logging.info(f"Arquivo salvo: {OUTPUT_FILE}")
+    except Exception as e:
+        logging.error(f"Erro ao salvar JSON: {e}")
 
-def limpa(texto: str | None) -> str:
-    return (texto or "").strip()
-
-# ---------- Coleta ----------
-noticias = []
-
-for fonte, url in FEEDS.items():
-    feed = feedparser.parse(url)
-
-    if feed.bozo:  # feed mal‑formado ou erro de rede
-        print(f"[WARN] Problema ao ler {fonte}: {feed.bozo_exception}")
-        continue
-
-    for idx, entry in enumerate(feed.entries):
-        if MAX_ITENS and idx >= MAX_ITENS:
-            break
-
-        noticias.append(
-            {
-                "titulo": limpa(entry.get("title")),
-                "link": limpa(entry.get("link")),
-                "resumo": limpa(
-                    entry.get("summary")
-                    or entry.get("description")
-                    or entry.get("subtitle")
-                ),
-                "data": normaliza_data(
-                    entry.get("published")
-                    or entry.get("updated")
-                    or ""
-                ),
-                "fonte": fonte,
-            }
-        )
-
-# ---------- Persistência ----------
-with OUTPUT_FILE.open("w", encoding="utf-8") as f:
-    json.dump(noticias, f, ensure_ascii=False, indent=2)
-
-print(f"✅ {len(noticias)} notícias gravadas em {OUTPUT_FILE.resolve()}")
+if __name__ == "__main__":
+    main()

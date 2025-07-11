@@ -1,0 +1,10 @@
+2025-07-11 18:34:35,382 [INFO] Coletando notícias de: G1
+2025-07-11 18:34:35,553 [INFO] Encontradas 100 notícias de G1
+2025-07-11 18:34:35,554 [INFO] Coletando notícias de: BBC News Brasil
+2025-07-11 18:34:35,835 [INFO] Encontradas 19 notícias de BBC News Brasil
+2025-07-11 18:34:35,835 [INFO] Coletando notícias de: Estadão
+2025-07-11 18:34:35,949 [INFO] Encontradas 15 notícias de Estadão
+2025-07-11 18:34:35,949 [INFO] Coletando notícias de: UOL Notícias
+2025-07-11 18:34:36,248 [WARNING] Erro ao processar feed 'UOL Notícias': document declared as us-ascii, but parsed as iso-8859-1
+2025-07-11 18:34:36,248 [INFO] Encontradas 0 notícias de UOL Notícias
+2025-07-11 18:34:36,252 [INFO] Arquivo salvo: raw_noticias.json

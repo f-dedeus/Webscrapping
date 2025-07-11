@@ -1,1 +1,4 @@
 venv
+__pycache__
+raw_noticias.json
+rss_reader.log
